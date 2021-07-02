@@ -379,25 +379,25 @@ const handle = (event, xmlState, liveState) => {
                                     break;
                                 }
                                 case 'unmute-member': {
-                                    let memid = event.getHeader('Caller-Username')
+                                    let memconfid = event.getHeader('Member-ID')
                                     let idx = liveState.conferences[posi].members
-                                        .findIndex(mem => mem.id === memid)
+                                        .findIndex(mem => mem.confid === memconfid)
                                     liveState.conferences[posi].members[idx].mute = false
-                                    if (liveState.conferences[posi].members[idx].id === liveState.conferences[posi].floor.id) {
+                                    if (liveState.conferences[posi].members[idx].confid === liveState.conferences[posi].floor.confid) {
                                         liveState.conferences[posi].floor.mute = false
                                     }
-                                    liveState.emit('unmute', conference, memid)
+                                    liveState.emit('unmute', conference, memconfid)
                                     break;
                                 }
                                 case 'mute-member': {
-                                    let memid = event.getHeader('Caller-Username')
+                                    let memconfid = event.getHeader('Member-ID')
                                     let idx = liveState.conferences[posi].members
-                                        .findIndex(mem => mem.id === memid)
+                                        .findIndex(mem => mem.confid === memconfid)
                                     liveState.conferences[posi].members[idx].mute = true
-                                    if (liveState.conferences[posi].members[idx].id === liveState.conferences[posi].floor.id) {
+                                    if (liveState.conferences[posi].members[idx].confid === liveState.conferences[posi].floor.confid) {
                                         liveState.conferences[posi].floor.mute = true
                                     }
-                                    liveState.emit('mute', conference, memid)
+                                    liveState.emit('mute', conference, memconfid)
                                     break;
                                 }
                                 case 'conference-destroy': {
@@ -407,16 +407,16 @@ const handle = (event, xmlState, liveState) => {
                                 }
                                 case 'del-member': {
                                     let mem = Parsers.addMemParse(event)
-                                    let memid = event.getHeader('Caller-Username')
+                                    let memconfid = event.getHeader('Member-ID')
                                     let idx = liveState.conferences[posi].members
-                                        .findIndex(mem => mem.id === memid)
+                                        .findIndex(mem => mem.confid === memconfid)
                                     liveState.conferences[posi].members.splice(idx, 1)
                                     liveState.conferences[posi].lastleave = mem
                                     liveState.conferences[posi].memcount--
                                     if (liveState.conferences[posi].members.length === 0) {
                                         liveState.emit('delConference', conference)
                                     } else {
-                                        liveState.emit('delMember', conference, memid)
+                                        liveState.emit('delMember', conference, memconfid)
                                     }
                                     break;
                                 }
@@ -442,7 +442,7 @@ const handle = (event, xmlState, liveState) => {
                     break;
                 }
                 case  'sofia::register':  {
-                    // console.log(event.serialize('json'))
+                    //console.log(event.serialize('json'))
                     let regid = event.getHeader('call-id')
                     if (liveState.registrations.findIndex(user => user.regid === regid) !== -1) {
                         return

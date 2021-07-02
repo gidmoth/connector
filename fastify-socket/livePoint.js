@@ -103,18 +103,18 @@ async function liveroutes(fastify, options) {
         })
     })
 
-    fastify.liveState.on('unmute', (conf, memid) => {
+    fastify.liveState.on('unmute', (conf, memconfid) => {
         fastify.websocketServer.clients.forEach(client => {
             if (client.readyState === 1) {
-                client.send(`{"event":"unmute","conference":"${conf}","data":"${memid}"}`)
+                client.send(`{"event":"unmute","conference":"${conf}","data":"${memconfid}"}`)
             }
         })
     })
 
-    fastify.liveState.on('mute', (conf, memid) => {
+    fastify.liveState.on('mute', (conf, memconfid) => {
         fastify.websocketServer.clients.forEach(client => {
             if (client.readyState === 1) {
-                client.send(`{"event":"mute","conference":"${conf}","data":"${memid}"}`)
+                client.send(`{"event":"mute","conference":"${conf}","data":"${memconfid}"}`)
             }
         })
     })
@@ -167,10 +167,10 @@ async function liveroutes(fastify, options) {
         })
     })
 
-    fastify.liveState.on('delMember', (conf, memid) => {
+    fastify.liveState.on('delMember', (conf, memconfid) => {
         fastify.websocketServer.clients.forEach(client => {
             if (client.readyState === 1) {
-                client.send(`{"event":"delMember","conference":"${conf}","data":"${memid}"}`)
+                client.send(`{"event":"delMember","conference":"${conf}","data":"${memconfid}"}`)
             }
         })
     })
