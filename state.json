@@ -1,0 +1,212 @@
+{
+    "_events": {},
+    "_eventsCount": 1,
+    "info": {
+        "reloadxml": {
+            "lastrun": "2021-07-07T08:54:22.293Z",
+            "lastmsg": "+OK [Success]"
+        },
+        "maintainance": {
+            "lastrun": "2021-07-07T08:54:22.564Z"
+        }
+    },
+    "globals": {
+        "hostname": "gsphone.c8h10n4o2.gs",
+        "local_ip_v4": "78.47.113.121",
+        "local_mask_v4": "255.255.255.255",
+        "local_ip_v6": "2a01:4f8:c0c:52ba::1",
+        "base_dir": "/usr",
+        "sounds_dir": "/usr/share/freeswitch/sounds",
+        "conf_dir": "/etc/freeswitch",
+        "log_dir": "/var/log/freeswitch",
+        "run_dir": "/var/run/freeswitch",
+        "db_dir": "/var/lib/freeswitch/db",
+        "mod_dir": "/usr/lib/freeswitch/mod",
+        "htdocs_dir": "/usr/share/freeswitch/htdocs",
+        "script_dir": "/usr/share/freeswitch/scripts",
+        "temp_dir": "/tmp",
+        "grammar_dir": "/usr/share/freeswitch/grammar",
+        "fonts_dir": "/usr/share/freeswitch/fonts",
+        "images_dir": "/var/lib/freeswitch/images",
+        "certs_dir": "/etc/freeswitch/tls",
+        "storage_dir": "/var/lib/freeswitch/storage",
+        "cache_dir": "/var/cache/freeswitch",
+        "data_dir": "/usr/share/freeswitch",
+        "localstate_dir": "/var/lib/freeswitch",
+        "switch_serial": "4e2f7179d6cc",
+        "core_uuid": "10c0a4d6-2cc3-43c9-8af9-0525171f231c",
+        "default_password": "napw",
+        "sound_prefix": "/usr/share/freeswitch/sounds/en/us/callie",
+        "domain": "gsphone.c8h10n4o2.gs",
+        "domain_name": "gsphone.c8h10n4o2.gs",
+        "global_codec_prefs": "OPUS,G722,H264,VP8",
+        "outbound_codec_prefs": "OPUS,G722,H264,VP8",
+        "external_rtp_ip": "78.47.113.121",
+        "external_sip_ip": "78.47.113.121",
+        "xml_rpc_password": "napw",
+        "internal_sip_port": "5060",
+        "external_sip_port": "5080",
+        "sip_tls_version": "tlsv1,tlsv1.1,tlsv1.2",
+        "internal_tls_port": "3361",
+        "internal_ssl_enable": "true",
+        "external_tls_port": "3381",
+        "external_ssl_enable": "false",
+        "sip_tls_ciphers": "ALL:!ADH:!LOW:!EXP:!MD5:@STRENGTH",
+        "internal_tls_only": "true",
+        "verto_bindlocal_port": "8082",
+        "es_listen_ip": "127.0.0.1",
+        "es_listen_port": "8021",
+        "es_pw": "ClueCon",
+        "defconpin": "0815",
+        "modconpin": "2357",
+        "recordings_dir": "/recordings",
+        "wss_binding": ":7443"
+    },
+    "users": [
+        {
+            "id": "20000",
+            "password": "Obp4nNiIoj",
+            "conpin": "2357",
+            "context": "team",
+            "name": "michi",
+            "email": "weiss-muenchen@t-online.de",
+            "polymac": "0004f21457dc"
+        },
+        {
+            "id": "20001",
+            "password": "iRgit488pW",
+            "conpin": "2357",
+            "context": "team",
+            "name": "Michi_Test",
+            "email": "weiss-muenchen@t-online.de",
+            "polymac": "0004f2357a48"
+        },
+        {
+            "id": "20002",
+            "password": "mKELkdYv6A",
+            "conpin": "2357",
+            "context": "team",
+            "name": "teststefan",
+            "email": "gidoramothra@gmail.com",
+            "polymac": "0004f2145497"
+        }        
+    ],
+    "conferencetypes": [
+        "16kHz-novideo",
+        "48kHz-video"
+    ],
+    "conferences": [
+        {
+            "num": "31000",
+            "name": "TK",
+            "type": "16kHz-novideo",
+            "context": "friends"
+        },
+        {
+            "num": "32000",
+            "name": "Verlag_1",
+            "type": "16kHz-novideo",
+            "context": "public"
+        },
+        {
+            "num": "32001",
+            "name": "Verlag_2",
+            "type": "16kHz-novideo",
+            "context": "public"
+        },
+        {
+            "num": "32002",
+            "name": "Muenchen",
+            "type": "16kHz-novideo",
+            "context": "public"
+        },
+        {
+            "num": "32003",
+            "name": "Videotest",
+            "type": "48kHz-video",
+            "context": "public"
+        },
+        {
+            "num": "32004",
+            "name": "Frankfurt",
+            "type": "16kHz-novideo",
+            "context": "public"
+        },
+        {
+            "num": "32005",
+            "name": "Nuernberg",
+            "type": "16kHz-novideo",
+            "context": "public"
+        },
+        {
+            "num": "32006",
+            "name": "Bremen",
+            "type": "16kHz-novideo",
+            "context": "public"
+        },
+        {
+            "num": "32007",
+            "name": "Dortmund",
+            "type": "16kHz-novideo",
+            "context": "public"
+        },
+        {
+            "num": "32008",
+            "name": "Stuttgart",
+            "type": "16kHz-novideo",
+            "context": "public"
+        },
+        {
+            "num": "32009",
+            "name": "Wien",
+            "type": "16kHz-novideo",
+            "context": "public"
+        },
+        {
+            "num": "32010",
+            "name": "Berlin",
+            "type": "16kHz-novideo",
+            "context": "public"
+        },
+        {
+            "num": "32011",
+            "name": "Hamburg",
+            "type": "16kHz-novideo",
+            "context": "public"
+        },
+        {
+            "num": "32012",
+            "name": "Leipzig",
+            "type": "16kHz-novideo",
+            "context": "public"
+        },
+        {
+            "num": "32013",
+            "name": "Klima",
+            "type": "16kHz-novideo",
+            "context": "public"
+        },
+        {
+            "num": "32014",
+            "name": "Latinos",
+            "type": "16kHz-novideo",
+            "context": "public"
+        },
+        {
+            "num": "32015",
+            "name": "Ostausschuss",
+            "type": "16kHz-novideo",
+            "context": "public"
+        }
+    ],
+    "availUsrIds": {
+        "team": {},
+        "friends": {},
+        "public": {}
+    },
+    "availConfNums": {
+        "team": {},
+        "friends": {},
+        "public": {}
+    }
+}

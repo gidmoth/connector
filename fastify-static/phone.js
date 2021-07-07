@@ -17,6 +17,40 @@ async function vcroutes(fastify, options) {
         return rsp
     })
 
+    fastify.get('/friendxml', async function (req, reply){
+        let answer = { op: '/friendxml' }
+        answer.state = {}
+        answer.state.users = fastify.xmlState.users.map(usr => {
+            return ({
+                name: usr.name,
+                id: usr.id,
+                email: usr.email,
+                context: usr.context
+            })
+        })
+        answer.state.conferences = fastify.xmlState.conferences.filter(conf => {
+            return conf.context != 'team'
+        })
+        return answer
+    })
+
+    fastify.get('/pubxml', async function (req, reply){
+        let answer = { op: '/pubxml' }
+        answer.state = {}
+        answer.state.users = fastify.xmlState.users.map(usr => {
+            return ({
+                name: usr.name,
+                id: usr.id,
+                email: usr.email,
+                context: usr.context
+            })
+        })
+        answer.state.conferences = fastify.xmlState.conferences.filter(conf => {
+            return conf.context === 'public'
+        })
+        return answer
+    })
+
     fastify.get('/', async function (req, reply) {
         return reply.sendFile('index.html')
     })

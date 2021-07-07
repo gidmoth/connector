@@ -20,7 +20,7 @@ function checkCreds(cstring, arr) {
     let user = arr.filter(usr => { return usr.name === `${cstring.split(':')[0]}` })[0]
     if (user !== undefined
         && user.password === `${cstring.split(':')[1]}`
-        && user.context === fastiConf.apiallow) {
+        && user.context === (fastiConf.apiallow || fastiConf.allow)) {
         return true
     }
     return false

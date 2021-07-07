@@ -464,7 +464,7 @@ const handle = (event, xmlState, liveState) => {
                     break
                 }
                 case  'sofia::expire': {
-                    //console.log(event.serialize('json'))
+                    console.log(event.serialize('json'))
                     let regid = event.getHeader('call-id')
                     let regidx = liveState.registrations.findIndex(user => user.regid === regid)
                     liveState.emit('delReg', liveState.registrations[regidx])
