@@ -443,37 +443,39 @@ const handle = (event, xmlState, liveState) => {
                     break;
                 }
                 case  'sofia::register':  {
-                    //console.log(event.serialize('json'))
-                    let regid = event.getHeader('call-id')
-                    if (liveState.registrations.findIndex(user => user.regid === regid) !== -1) {
+                    console.log(event.serialize('json'))
+                    let usrid = event.getHeader('from-user')
+                    if (liveState.registrations.findIndex(user => user.id === usrid) !== -1) {
                         return
                     }
                     let user = {}
-                    user.id = event.getHeader('from-user')
-                    user.regid = regid
+                    user.id = usrid
+                    user.regid = event.getHeader('call-id')
                     user.sipcon = `${event.getHeader('network-ip')}:${event.getHeader('network-port')}`
                     liveState.registrations.push(user)
                     liveState.emit('addReg', user)
                     break;
                 }
                 case 'sofia::unregister': {
-                    //console.log(event.serialize('json'))
-                    let regid = event.getHeader('call-id')
-                    let regidx = liveState.registrations.findIndex(user => user.regid === regid)
+                    //console.log(`SHOULD_DELREG: ${event.serialize('json')}`)
+                    let usrid = event.getHeader('from-user')
+                    let regidx = liveState.registrations.findIndex(user => user.id === usrid)
+                    let newregs = liveState.registrations.filter(user => user.id !== usrid)
                     liveState.emit('delReg', liveState.registrations[regidx])
-                    liveState.registrations.splice(regidx, 1)
+                    liveState.registrations = newregs
                     break
                 }
                 case  'sofia::expire': {
-                    //console.log(event.serialize('json'))
-                    let regid = event.getHeader('call-id')
-                    let regidx = liveState.registrations.findIndex(user => user.regid === regid)
+                    //console.log(`SHOULD_DELREG: ${event.serialize('json')}`)
+                    let usrid = event.getHeader('from-user')
+                    let regidx = liveState.registrations.findIndex(user => user.id === usrid)
+                    let newregs = liveState.registrations.filter(user => user.id !== usrid)
                     liveState.emit('delReg', liveState.registrations[regidx])
-                    liveState.registrations.splice(regidx, 1)
+                    liveState.registrations = newregs
                     break
                 }
                 default: {
-                    console.log(event.serialize('json'))
+                    //console.log(event.serialize('json'))
                     break;
                 }
             }
