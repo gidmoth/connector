@@ -444,13 +444,13 @@ const handle = (event, xmlState, liveState) => {
                 }
                 case  'sofia::register':  {
                     console.log(event.serialize('json'))
-                    let usrid = event.getHeader('from-user')
-                    if (liveState.registrations.findIndex(user => user.id === usrid) !== -1) {
+                    let regid = event.getHeader('call-id')
+                    if (liveState.registrations.findIndex(user => user.regid === regid) !== -1) {
                         return
                     }
                     let user = {}
-                    user.id = usrid
-                    user.regid = event.getHeader('call-id')
+                    user.id = event.getHeader('from-user')
+                    user.regid = regid
                     user.sipcon = `${event.getHeader('network-ip')}:${event.getHeader('network-port')}`
                     liveState.registrations.push(user)
                     liveState.emit('addReg', user)
@@ -458,20 +458,18 @@ const handle = (event, xmlState, liveState) => {
                 }
                 case 'sofia::unregister': {
                     //console.log(`SHOULD_DELREG: ${event.serialize('json')}`)
-                    let usrid = event.getHeader('from-user')
-                    let regidx = liveState.registrations.findIndex(user => user.id === usrid)
-                    let newregs = liveState.registrations.filter(user => user.id !== usrid)
+                    let regid = event.getHeader('call-id')
+                    let regidx = liveState.registrations.findIndex(user => user.regid === regid)
                     liveState.emit('delReg', liveState.registrations[regidx])
-                    liveState.registrations = newregs
+                    liveState.registrations.splice(regidx, 1)
                     break
                 }
                 case  'sofia::expire': {
                     //console.log(`SHOULD_DELREG: ${event.serialize('json')}`)
-                    let usrid = event.getHeader('from-user')
-                    let regidx = liveState.registrations.findIndex(user => user.id === usrid)
-                    let newregs = liveState.registrations.filter(user => user.id !== usrid)
+                    let regid = event.getHeader('call-id')
+                    let regidx = liveState.registrations.findIndex(user => user.regid === regid)
                     liveState.emit('delReg', liveState.registrations[regidx])
-                    liveState.registrations = newregs
+                    liveState.registrations.splice(regidx, 1)
                     break
                 }
                 default: {
