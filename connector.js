@@ -76,7 +76,7 @@ fastify.register(require('./fastify-rest/api'))
 // register static endpoints
 fastify.register(require('./fastify-static/static'))
 
-// register live endpoint
+// register live endpoints
 fastify.register(require('./fastify-socket/livePoint'))
 
 
