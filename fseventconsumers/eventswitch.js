@@ -443,7 +443,7 @@ const handle = (event, xmlState, liveState) => {
                     break;
                 }
                 case  'sofia::register':  {
-                    console.log(event.serialize('json'))
+                    //console.log(event.serialize('json'))
                     let regid = event.getHeader('call-id')
                     if (liveState.registrations.findIndex(user => user.regid === regid) !== -1) {
                         return

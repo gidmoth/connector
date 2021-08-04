@@ -34,6 +34,16 @@ async function liveroutes(fastify, options) {
         }
     })
 
+    fastify.after(() => {
+        fastify.websocketServer.on('connection', (client, req) => {
+            let user = fastify.xmlState.users.filter(usr => {
+                return usr.password === `${req.url.split(':')[1]}`
+            })[0]
+            client.ctx = user.context
+            console.log(`NEW CLIENT: ${user.context}`)
+        })
+    })
+
     const interval = setInterval(() => {
         fastify.websocketServer.clients.forEach(sock => {
             if (sock.isAlive === false) {
@@ -81,6 +91,7 @@ async function liveroutes(fastify, options) {
 
     fastify.liveState.on('newConference', (data) => {
         fastify.websocketServer.clients.forEach(client => {
+            console.log(`SEND TO: ${client.ctx}`)
             if (client.readyState === 1) {
                 client.send(`{"event":"newConference","data":${JSON.stringify(data)}}`)
             }
@@ -210,7 +221,6 @@ async function liveroutes(fastify, options) {
     fastify.get('/api/live', { websocket: true }, (conn, req) => {
         conn.socket.on('open', heartbeat)
         conn.socket.on('pong', heartbeat)
-
         conn.socket.on('message', message => {
             try {
                 let msg = JSON.parse(message)
