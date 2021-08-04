@@ -73,9 +73,12 @@ const addMemParse = (evn) => {
     }
 }
 
-const addConfParse = (evn) => {
+const addConfParse = (evn, confarr) => {
     return {
         name: evn.getHeader('Conference-Name'),
+        context: confarr.filter(cnf => cnf.name === evn.getHeader('Conference-Name'))[0].context,
+        type: confarr.filter(cnf => cnf.name === evn.getHeader('Conference-Name'))[0].type,
+        num: confarr.filter(cnf => cnf.name === evn.getHeader('Conference-Name'))[0].num,
         recording: {status: 'norec'},
         locked: false,
         floor: {},

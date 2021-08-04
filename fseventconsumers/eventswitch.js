@@ -166,6 +166,7 @@ const handle = (event, xmlState, liveState) => {
             // console.log(event.serialize('json'))
             switch (event.getHeader('Event-Subclass')) {
                 case 'conference::maintenance': {
+                    //console.log(event.serialize('json'))
                     let conference = event.getHeader('Conference-Name')
                     let posi = liveState.conferences.findIndex(conf => conf.name === conference)
                     let mymsg = event.getHeader('Data')
@@ -354,7 +355,8 @@ const handle = (event, xmlState, liveState) => {
                         default: {
                             switch (event.getHeader('Action')) {
                                 case 'conference-create': {
-                                    let conf = Parsers.addConfParse(event)
+                                    let conf = Parsers.addConfParse(event, xmlState.conferences)
+                                    //console.log(conf)
                                     liveState.conferences.push(conf)
                                     break;
                                 }

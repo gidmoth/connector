@@ -26,6 +26,10 @@ function checkCreds(cstring, arr) {
     return false
 }
 
+function selectSend(client, conf, msg) {
+    
+}
+
 async function liveroutes(fastify, options) {
 
     fastify.register(require('fastify-websocket'), {
@@ -40,7 +44,7 @@ async function liveroutes(fastify, options) {
                 return usr.password === `${req.url.split(':')[1]}`
             })[0]
             client.ctx = user.context
-            console.log(`NEW CLIENT: ${user.context}`)
+            //console.log(`NEW CLIENT: ${user.context}`)
         })
     })
 
@@ -91,7 +95,7 @@ async function liveroutes(fastify, options) {
 
     fastify.liveState.on('newConference', (data) => {
         fastify.websocketServer.clients.forEach(client => {
-            console.log(`SEND TO: ${client.ctx}`)
+            //console.log(`SEND TO: ${client.ctx}`)
             if (client.readyState === 1) {
                 client.send(`{"event":"newConference","data":${JSON.stringify(data)}}`)
             }
