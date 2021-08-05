@@ -111,12 +111,12 @@ async function liveroutes(fastify, options) {
                         break;
                     }
                     case 'friends': {
-                        let filtered = liveState.conferences.filter(cnf => cnf.context !== 'team')
+                        let filtered = fastify.liveState.conferences.filter(cnf => { return cnf.context !== 'team' })
                         client.send(`{"event":"newLiveState","data":${JSON.stringify(filtered)}}`)
                         break;
                     }
                     case 'public': {
-                        let filtered = liveState.conferences.filter(cnf => cnf.context === 'public')
+                        let filtered = fastify.liveState.conferences.filter(cnf => { return cnf.context === 'public' })
                         client.send(`{"event":"newLiveState","data":${JSON.stringify(filtered)}}`)
                         break;
                     }
@@ -132,7 +132,7 @@ async function liveroutes(fastify, options) {
                 switch (data.context) {
                     case 'public': {
                         client.send(`{"event":"newConference","data":${JSON.stringify(data)}}`)
-                        break;        
+                        break;
                     }
                     case 'friends': {
                         if (client.ctx !== 'public') {
@@ -284,7 +284,22 @@ async function liveroutes(fastify, options) {
                 switch (msg.req) {
                     case 'init': {
                         //console.log(`GOT INITREQ FROM: ${conn.socket.ctx}`)
-                        conn.socket.send(`{"event":"reply","reply":"init","data":${JSON.stringify(fastify.liveState.conferences)}}`)
+                        switch (conn.socket.ctx) {
+                            case 'team': {
+                                conn.socket.send(`{"event":"reply","reply":"init","data":${JSON.stringify(fastify.liveState.conferences)}}`)
+                                break;
+                            }
+                            case 'friends': {
+                                let filtered = fastify.liveState.conferences.filter(cnf => { return cnf.context !== 'team' })
+                                conn.socket.send(`{"event":"reply","reply":"init","data":${JSON.stringify(filtered)}}`)
+                                break;
+                            }
+                            case 'public': {
+                                let filtered = fastify.liveState.conferences.filter(cnf => { return cnf.context === 'public' })
+                                conn.socket.send(`{"event":"reply","reply":"init","data":${JSON.stringify(filtered)}}`)
+                                break;
+                            }
+                        }
                         break
                     }
                     case 'initreg': {
@@ -292,6 +307,10 @@ async function liveroutes(fastify, options) {
                         break
                     }
                     case 'exec': {
+                        if (conn.socket.ctx === 'public') {
+                            conn.socket.write('HTTP/1.1 401 Unauthorized\r\n\r\n')
+                            conn.socket.destroy()
+                        }
                         if (msg.conference === undefined) {
                             conn.socket.send(`{"event":"error","error":"wrong protocol"}`)
                             return
@@ -398,6 +417,10 @@ async function liveroutes(fastify, options) {
                         break
                     }
                     case 'memexec': {
+                        if (conn.socket.ctx === 'public') {
+                            conn.socket.write('HTTP/1.1 401 Unauthorized\r\n\r\n')
+                            conn.socket.destroy()
+                        }
                         if (msg.conference === undefined) {
                             conn.socket.send(`{"event":"error","error":"wrong protocol"}`)
                             return
