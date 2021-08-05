@@ -162,7 +162,7 @@ async function liveroutes(fastify, options) {
     fastify.liveState.on('floorchange', (conf, mem) => {
         fastify.websocketServer.clients.forEach(client => {
             if (client.readyState === 1) {
-                client.send(`{"event":"floorchange","conference":"${conf}","data":${JSON.stringify(mem)}}`)
+                selectSend(client, fastify.liveState.conferences, conf, `{"event":"floorchange","conference":"${conf}","data":${JSON.stringify(mem)}}`)
             }
         })
     })
@@ -170,7 +170,7 @@ async function liveroutes(fastify, options) {
     fastify.liveState.on('unmute', (conf, memconfid) => {
         fastify.websocketServer.clients.forEach(client => {
             if (client.readyState === 1) {
-                client.send(`{"event":"unmute","conference":"${conf}","data":"${memconfid}"}`)
+                selectSend(client, fastify.liveState.conferences, conf, `{"event":"unmute","conference":"${conf}","data":"${memconfid}"}`)
             }
         })
     })
@@ -178,7 +178,7 @@ async function liveroutes(fastify, options) {
     fastify.liveState.on('mute', (conf, memconfid) => {
         fastify.websocketServer.clients.forEach(client => {
             if (client.readyState === 1) {
-                client.send(`{"event":"mute","conference":"${conf}","data":"${memconfid}"}`)
+                selectSend(client, fastify.liveState.conferences, conf, `{"event":"mute","conference":"${conf}","data":"${memconfid}"}`)
             }
         })
     })
@@ -186,7 +186,7 @@ async function liveroutes(fastify, options) {
     fastify.liveState.on('muteAll', (conf) => {
         fastify.websocketServer.clients.forEach(client => {
             if (client.readyState === 1) {
-                client.send(`{"event":"muteAll","conference":"${conf}"}`)
+                selectSend(client, fastify.liveState.conferences, conf, `{"event":"muteAll","conference":"${conf}"}`)
             }
         })
     })
@@ -194,7 +194,7 @@ async function liveroutes(fastify, options) {
     fastify.liveState.on('recStop', (conf) => {
         fastify.websocketServer.clients.forEach(client => {
             if (client.readyState === 1) {
-                client.send(`{"event":"recStop","conference":"${conf}"}`)
+                selectSend(client, fastify.liveState.conferences, conf, `{"event":"recStop","conference":"${conf}"}`)
             }
         })
     })
@@ -202,7 +202,7 @@ async function liveroutes(fastify, options) {
     fastify.liveState.on('recResume', (conf, file) => {
         fastify.websocketServer.clients.forEach(client => {
             if (client.readyState === 1) {
-                client.send(`{"event":"recResume","conference":"${conf}","file":"${file}"}`)
+                selectSend(client, fastify.liveState.conferences, conf, `{"event":"recResume","conference":"${conf}","file":"${file}"}`)
             }
         })
     })
@@ -210,7 +210,7 @@ async function liveroutes(fastify, options) {
     fastify.liveState.on('recPause', (conf, file) => {
         fastify.websocketServer.clients.forEach(client => {
             if (client.readyState === 1) {
-                client.send(`{"event":"recPause","conference":"${conf}","file":"${file}"}`)
+                selectSend(client, fastify.liveState.conferences, conf, `{"event":"recPause","conference":"${conf}","file":"${file}"}`)
             }
         })
     })
@@ -218,7 +218,7 @@ async function liveroutes(fastify, options) {
     fastify.liveState.on('recStart', (conf, file) => {
         fastify.websocketServer.clients.forEach(client => {
             if (client.readyState === 1) {
-                client.send(`{"event":"recStart","conference":"${conf}","file":"${file}"}`)
+                selectSend(client, fastify.liveState.conferences, conf, `{"event":"recStart","conference":"${conf}","file":"${file}"}`)
             }
         })
     })
@@ -226,7 +226,7 @@ async function liveroutes(fastify, options) {
     fastify.liveState.on('delConference', (conf) => {
         fastify.websocketServer.clients.forEach(client => {
             if (client.readyState === 1) {
-                client.send(`{"event":"delConference","conference":"${conf}"}`)
+                selectSend(client, fastify.liveState.conferences, conf, `{"event":"delConference","conference":"${conf}"}`)
             }
         })
     })
@@ -234,7 +234,7 @@ async function liveroutes(fastify, options) {
     fastify.liveState.on('delMember', (conf, memconfid) => {
         fastify.websocketServer.clients.forEach(client => {
             if (client.readyState === 1) {
-                client.send(`{"event":"delMember","conference":"${conf}","data":"${memconfid}"}`)
+                selectSend(client, fastify.liveState.conferences, conf, `{"event":"delMember","conference":"${conf}","data":"${memconfid}"}`)
             }
         })
     })
@@ -242,7 +242,7 @@ async function liveroutes(fastify, options) {
     fastify.liveState.on('lock', (conf) => {
         fastify.websocketServer.clients.forEach(client => {
             if (client.readyState === 1) {
-                client.send(`{"event":"lock","conference":"${conf}"}`)
+                selectSend(client, fastify.liveState.conferences, conf, `{"event":"lock","conference":"${conf}"}`)
             }
         })
     })
@@ -250,7 +250,7 @@ async function liveroutes(fastify, options) {
     fastify.liveState.on('unlock', (conf) => {
         fastify.websocketServer.clients.forEach(client => {
             if (client.readyState === 1) {
-                client.send(`{"event":"unlock","conference":"${conf}"}`)
+                selectSend(client, fastify.liveState.conferences, conf, `{"event":"unlock","conference":"${conf}"}`)
             }
         })
     })
