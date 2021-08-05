@@ -19,15 +19,32 @@ function heartbeat() {
 function checkCreds(cstring, arr) {
     let user = arr.filter(usr => { return usr.name === `${cstring.split(':')[0]}` })[0]
     if (user !== undefined
-        && user.password === `${cstring.split(':')[1]}`
-        && user.context === fastiConf.apiallow) {
+        && user.password === `${cstring.split(':')[1]}`) {
         return true
     }
     return false
 }
 
-function selectSend(client, conf, msg) {
-    
+function selectSend(client, confarr, conf, msg) {
+    let myctx = confarr.filter(cnf => cnf.name === conf)[0].context
+    switch (myctx) {
+        case 'public': {
+            client.send(msg)
+            break;
+        }
+        case 'friends': {
+            if (client.ctx !== 'public') {
+                client.send(msg)
+            }
+            break;
+        }
+        case 'team': {
+            if (client.ctx === 'team') {
+                client.send(msg)
+            }
+            break;
+        }
+    }
 }
 
 async function liveroutes(fastify, options) {
@@ -88,7 +105,22 @@ async function liveroutes(fastify, options) {
     fastify.liveState.on('newLiveState', () => {
         fastify.websocketServer.clients.forEach(client => {
             if (client.readyState === 1) {
-                client.send(`{"event":"newLiveState","data":${JSON.stringify(fastify.liveState.conferences)}}`)
+                switch (client.ctx) {
+                    case 'team': {
+                        client.send(`{"event":"newLiveState","data":${JSON.stringify(fastify.liveState.conferences)}}`)
+                        break;
+                    }
+                    case 'friends': {
+                        let filtered = liveState.conferences.filter(cnf => cnf.context !== 'team')
+                        client.send(`{"event":"newLiveState","data":${JSON.stringify(filtered)}}`)
+                        break;
+                    }
+                    case 'public': {
+                        let filtered = liveState.conferences.filter(cnf => cnf.context === 'public')
+                        client.send(`{"event":"newLiveState","data":${JSON.stringify(filtered)}}`)
+                        break;
+                    }
+                }
             }
         })
     })
@@ -97,7 +129,24 @@ async function liveroutes(fastify, options) {
         fastify.websocketServer.clients.forEach(client => {
             //console.log(`SEND TO: ${client.ctx}`)
             if (client.readyState === 1) {
-                client.send(`{"event":"newConference","data":${JSON.stringify(data)}}`)
+                switch (data.context) {
+                    case 'public': {
+                        client.send(`{"event":"newConference","data":${JSON.stringify(data)}}`)
+                        break;        
+                    }
+                    case 'friends': {
+                        if (client.ctx !== 'public') {
+                            client.send(`{"event":"newConference","data":${JSON.stringify(data)}}`)
+                        }
+                        break;
+                    }
+                    case 'team': {
+                        if (client.ctx === 'team') {
+                            client.send(`{"event":"newConference","data":${JSON.stringify(data)}}`)
+                        }
+                        break;
+                    }
+                }
             }
         })
     })
@@ -105,7 +154,7 @@ async function liveroutes(fastify, options) {
     fastify.liveState.on('newMember', (conf, mem) => {
         fastify.websocketServer.clients.forEach(client => {
             if (client.readyState === 1) {
-                client.send(`{"event":"newMember","conference":"${conf}","data":${JSON.stringify(mem)}}`)
+                selectSend(client, fastify.liveState.conferences, conf, `{"event":"newMember","conference":"${conf}","data":${JSON.stringify(mem)}}`)
             }
         })
     })
@@ -234,6 +283,7 @@ async function liveroutes(fastify, options) {
                 }
                 switch (msg.req) {
                     case 'init': {
+                        //console.log(`GOT INITREQ FROM: ${conn.socket.ctx}`)
                         conn.socket.send(`{"event":"reply","reply":"init","data":${JSON.stringify(fastify.liveState.conferences)}}`)
                         break
                     }
