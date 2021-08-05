@@ -308,8 +308,10 @@ async function liveroutes(fastify, options) {
                     }
                     case 'exec': {
                         if (conn.socket.ctx === 'public') {
-                            conn.socket.write('HTTP/1.1 401 Unauthorized\r\n\r\n')
-                            conn.socket.destroy()
+                            console.log('PUBEXREQ!')
+                            conn.socket.send('HTTP/1.1 401 Unauthorized\r\n\r\n')
+                            conn.socket.close()
+                            return
                         }
                         if (msg.conference === undefined) {
                             conn.socket.send(`{"event":"error","error":"wrong protocol"}`)
@@ -418,8 +420,10 @@ async function liveroutes(fastify, options) {
                     }
                     case 'memexec': {
                         if (conn.socket.ctx === 'public') {
-                            conn.socket.write('HTTP/1.1 401 Unauthorized\r\n\r\n')
-                            conn.socket.destroy()
+                            console.log('PUBEXREQ!')
+                            conn.socket.send('HTTP/1.1 401 Unauthorized\r\n\r\n')
+                            conn.socket.close()
+                            return
                         }
                         if (msg.conference === undefined) {
                             conn.socket.send(`{"event":"error","error":"wrong protocol"}`)
