@@ -18,6 +18,11 @@ async function vcroutes(fastify, options) {
     })
 
     fastify.get('/friendxml', async function (req, reply){
+        // console.log(`FRIENDXMLREQ FROM: ${req.user.context}`)
+        if (req.user.context === 'public') {
+            reply.code(401)
+            return reply.send({error: 'wrong context'})
+        }
         let answer = { op: '/friendxml' }
         answer.state = {}
         answer.state.users = fastify.xmlState.users.map(usr => {
@@ -41,7 +46,6 @@ async function vcroutes(fastify, options) {
             return ({
                 name: usr.name,
                 id: usr.id,
-                email: usr.email,
                 context: usr.context
             })
         })
