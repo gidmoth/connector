@@ -36,6 +36,7 @@ async function vcroutes(fastify, options) {
         answer.state.conferences = fastify.xmlState.conferences.filter(conf => {
             return conf.context != 'team'
         })
+        answer.state.conferencetypes = fastify.xmlState.conferencetypes
         return answer
     })
 
