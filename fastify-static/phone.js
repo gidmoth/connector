@@ -53,6 +53,7 @@ async function vcroutes(fastify, options) {
         answer.state.conferences = fastify.xmlState.conferences.filter(conf => {
             return conf.context === 'public'
         })
+        answer.state.conferencetypes = fastify.xmlState.conferencetypes
         return answer
     })
 
