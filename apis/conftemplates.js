@@ -80,7 +80,7 @@ const getConfFile = (conf) => {
     <extension name="${conf.name}">
         <condition field="destination_number" expression="${conf.num}">
             <!-- force codec for all conferees -->
-            <action application="set" data="codec_string=OPUS,H264"/>
+            <action application="set" data="codec_string=OPUS,H264,VP8"/>
             <action application="answer"/>
             <action application="conference" data="${conf.name}@${conf.type}+\${conpin}+flags{\${conf_flags}}"/>
         </condition>
