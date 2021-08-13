@@ -3,6 +3,8 @@
  */
 
 const provpaths = require('../config').getConfig('provisioningpaths')
+const fs = require('fs')
+const fsConf = require('../config').getConfig('freeswitch')
 
 async function vcroutes(fastify, options) {
     fastify.register(require('fastify-static'), {
@@ -10,18 +12,34 @@ async function vcroutes(fastify, options) {
         serve: true
     })
 
+    const recDelSchema = {
+        $schema: 'http://json-schema.org/draft-07/schema#',
+        $id: 'gidmoth/recDelSchema',
+        body: {
+            type: 'array',
+            items: {
+                type: 'object',
+                properties: {
+                    file: { type: 'string' }
+                },
+                required: ['file'],
+                additionalProperties: false
+            }
+        }
+    }
+
     fastify.get('/userinfo', async function (req, reply) {
-        let rsp =  req.user
+        let rsp = req.user
         rsp.wss_binding = fastify.xmlState.globals.wss_binding
         rsp.internal_tls_port = fastify.xmlState.globals.internal_tls_port
         return rsp
     })
 
-    fastify.get('/friendxml', async function (req, reply){
+    fastify.get('/friendxml', async function (req, reply) {
         // console.log(`FRIENDXMLREQ FROM: ${req.user.context}`)
         if (req.user.context === 'public') {
             reply.code(401)
-            return reply.send({error: 'wrong context'})
+            return reply.send({ error: 'wrong context' })
         }
         let answer = { op: '/friendxml' }
         answer.state = {}
@@ -40,7 +58,7 @@ async function vcroutes(fastify, options) {
         return answer
     })
 
-    fastify.get('/pubxml', async function (req, reply){
+    fastify.get('/pubxml', async function (req, reply) {
         let answer = { op: '/pubxml' }
         answer.state = {}
         answer.state.users = fastify.xmlState.users.map(usr => {
@@ -54,6 +72,41 @@ async function vcroutes(fastify, options) {
             return conf.context === 'public'
         })
         answer.state.conferencetypes = fastify.xmlState.conferencetypes
+        return answer
+    })
+
+    fastify.get('/friendsrec', async function (req, reply) {
+        if (req.user.context === 'public') {
+            reply.code(401)
+            return reply.send({ error: 'wrong context' })
+        }
+        let answer = { op: 'friendserc', files: [] }
+        fs.readdirSync(fsConf.recordings).forEach(file => {
+            let ctx = fastify.xmlState.conferences.filter(conf => {
+                return conf.name === file.split('-')[0]
+            })[0].context
+            // console.log(`GOT RECCONTEXT: ${ctx}`)
+            if (ctx !== 'team') {
+                answer.files.push(file)
+            }
+        })
+        return answer
+    });
+
+    fastify.post('/delfriendsrec', { schema: recDelSchema }, async function (req, reply) {
+        if (req.user.context === 'public') {
+            reply.code(401)
+            return reply.send({ error: 'wrong context' })
+        }
+        let answer = { op: 'delfriendsrec', done: [], failed: [] }
+        req.body.forEach(file => {
+            try {
+                fs.unlinkSync(`${fsConf.recordings}/${file.file}`)
+                answer.done.push(file.file)
+            } catch (error) {
+                answer.failed.push(file.file)
+            }
+        })
         return answer
     })
 
