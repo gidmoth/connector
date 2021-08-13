@@ -38,6 +38,7 @@ async function staticroutes(fastify, options) {
         fastify.register(require('./polycom'))
         fastify.register(require('./linphone'))
         fastify.register(require('./phone'))
+        fastify.register(require('./friendsrec'))
     })
 }
 
