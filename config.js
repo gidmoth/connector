@@ -37,7 +37,7 @@
     fasti: {
         port: `${process.env.FASTIPORT || 443}`,
         ip: `${process.env.FASTIIP || '0.0.0.0'}`,
-        hostname: `${process.env.CONHOSTNAME || 'gsphone.c8h10n4o2.gs'}`,
+        hostname: `${process.env.CONHOSTNAME || 'host.example.com'}`,
         apiallow: 'team',
         allow: 'friends',
         disallow: 'public',
