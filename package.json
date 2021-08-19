@@ -15,20 +15,19 @@
   "license": "BSD-2-Clause",
   "dependencies": {
     "email-regex": "^4.0.0",
-    "fast-xml-parser": "^3.17.5",
-    "fastify": "^3.9.2",
-    "fastify-basic-auth": "^1.0.1",
-    "fastify-cors": "^6.0.0",
-    "fastify-passport": "^0.1.0",
-    "fastify-secure-session": "^2.3.0",
-    "fastify-static": "^3.3.0",
-    "fastify-websocket": "^3.1.0",
-    "generate-password": "^1.5.1",
+    "fast-xml-parser": "^3.19.0",
+    "fastify": "^3.20.2",
+    "fastify-basic-auth": "^2.1.0",
+    "fastify-cors": "^6.0.2",
+    "fastify-passport": "^0.4.3",
+    "fastify-secure-session": "^2.3.1",
+    "fastify-static": "^4.2.3",
+    "fastify-websocket": "^3.2.1",
+    "generate-password": "^1.6.1",
     "modesl": "^1.2.1",
     "passport-http": "^0.3.0",
     "sax": "^1.2.4",
-    "tar-fs": "^2.1.1",
-    "v8-profiler-next": "^1.3.0"
+    "tar-fs": "^2.1.1"
   },
   "devDependencies": {
     "@types/sax": "^1.2.1"
