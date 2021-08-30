@@ -621,53 +621,74 @@ returns a reduced version of the xmlState like this:
 
 ```
 {
-    "op": "info/state",
+    "op": "/friendxml",
     "state": {
-        "info": {
-            "reloadxml": {
-                "lastrun": "not till now",
-                "lastmsg": "no Message"
-            },
-            "maintainance": {
-                "lastrun": "2021-01-15T15:01:46.560Z"
-            }
-        },
-        "globals": {
-            "hostname": "host.example.com",
-            "local_ip_v4": "11.12.13.14",
-            ...
-
-        },
         "users": [
             {
+                "name": "Testuser",
                 "id": "20000",
-                "context": "team",
-                "name": "teamuser1",
-                "email": "teamuser1@example.com",
+                "email": "foo@bar.baz",
+                "context": "team"
+            },
+            ...
+        ],
+        "conferences": [
+            {
+                "num": "31000",
+                "name": "Test",
+                "type": "16kHz-novideo",
+                "context": "friends"
             },
             ...
         ],
         "conferencetypes": [
             "16kHz-novideo",
             "48kHz-video"
-        ],
-        "conferences": [
-            {
-                "num": "31000",
-                "name": "friends_g722",
-                "type": "16kHz-novideo",
-                "context": "team"
-            },
-            ...
         ]
     }
 }
 ```
 
-Users in the friendscontext don't get informations regarding conferences in the team contex. 
+Users in the friendscontext don't get informations regarding conferences in the team contex, and they don't get password conference pin or polycom mac info on users.
 
+#### public
 
+##### xmlState info
 
+###### `GET: /pubxml`
+
+returns a reduced version of the xmlState like this:
+
+```
+{
+    "op": "/pubxml",
+    "state": {
+        "users": [
+            {
+                "name": "Test",
+                "id": "20000",
+                "context": "team"
+            },
+            ...
+        ],
+        "conferences": [
+            {
+                "num": "32000",
+                "name": "Pubtest",
+                "type": "16kHz-novideo",
+                "context": "public"
+            },
+            ...
+        ],
+        "conferencetypes": [
+            "16kHz-novideo",
+            "48kHz-video"
+        ]
+    }
+}
+```
+
+Users in the publiccontext don't get informations regarding conferences in the team or friends contexs, and they don't get password, conference pin, email or polycom mac info on users.
 
 ### WebSocket
 
