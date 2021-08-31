@@ -1,9 +1,5 @@
 # connector
 
-**WARNING: This is under developement  at the moment:**
-**The README is outdated. Please use only  if you understand**
-**the code. This Warning will disapear as soon as that changes.**
-
 ## About
 
 This is the middleware part of [freeswitch-connector](https://github.com/gidmoth/freeswitch-connector). For general Information on Installation and usage please refer to the README therein. Connector is a nodejs program to help utilize freeswitch as a conferencing system. You can also find an example client using the API it provides [here](https://github.com/gidmoth/fsconcli).
@@ -37,6 +33,26 @@ with the shown parameter to the request: `?login=user:pass`.
 #### team
 
 ##### Userfunctions
+
+###### `GET: /userinfo`
+
+returns JSON with Info required to log in a phone. Like this:
+
+```
+{
+    "id": "20003",
+    "password": "napw",
+    "conpin": "2357",
+    "context": "team",
+    "name": "testuser",
+    "email": "foo@bar.baz",
+    "polymac": "none",
+    "wss_binding": ":7443",
+    "internal_tls_port": "3361"
+}
+```
+
+The contens depend on the user used for http digest auth. You can use the credentials and ports to connect phones.
 
 ###### `GET: /api/users`
 
@@ -615,6 +631,26 @@ this:
 
 ##### xmlState info
 
+###### `GET: /userinfo`
+
+returns JSON with Info required to log in a phone. Like this:
+
+```
+{
+    "id": "21003",
+    "password": "napw",
+    "conpin": "2357",
+    "context": "friends",
+    "name": "testfrienduser",
+    "email": "foo@bar.baz",
+    "polymac": "none",
+    "wss_binding": ":7443",
+    "internal_tls_port": "3361"
+}
+```
+
+The contens depend on the user used for http digest auth. You can use the credentials and ports to connect phones.
+
 ###### `GET: /friendxml`
 
 returns a reduced version of the xmlState like this:
@@ -651,9 +687,84 @@ returns a reduced version of the xmlState like this:
 
 Users in the friendscontext don't get informations regarding conferences in the team contex, and they don't get password conference pin or polycom mac info on users.
 
+##### Functions for recordings (of conferences)
+
+Users in the friends context can only interact with recordings of conferences in the friends or public context.
+
+###### `GET: /fr/friendsrec`
+
+returns a list of available recordings like this:
+
+```
+{
+    "op": "friendserc",
+    "files": [
+        "Test-2021-08-31T10:52:29.121Z.wav",
+        "Test25-2021-08-31T10:52:38.703Z.wav"
+    ]
+}
+```
+
+If there are no recordings, the arry would simply be empty. Names of the files are conference names and the timestamp marks the beginning of the recording.
+
+###### `POST: /fr/delfriendsrec`
+
+Schema:
+
+```
+$schema: 'http://json-schema.org/draft-07/schema#',
+        $id: 'gidmoth/recDelSchema',
+        body: {
+            type: 'array',
+            items: {
+                type: 'object',
+                properties: {
+                    file: { type: 'string' }
+                },
+                required: ['file'],
+                additionalProperties: false
+            }
+        }
+```
+
+Deletes recordings by their filenames. The answer looks like this:
+
+`{ op: 'api/recordings/del', done: [], failed: [] }`
+
+Deleting a recording fails if the filename does not exist.
+
+###### `GET: /fr/friendsrec/*filename*`
+
+Download the recording. By default these are `.wav` files with a timestamp in
+their name like this:
+
+`friends_16kHz-2021-01-19T13:21:36.840Z.wav`
+
+Timestamp marks beginning of recording.
+
 #### public
 
 ##### xmlState info
+
+###### `GET: /userinfo`
+
+returns JSON with Info required to log in a phone. Like this:
+
+```
+{
+    "id": "22003",
+    "password": "napw",
+    "conpin": "2357",
+    "context": "public",
+    "name": "testpubuser",
+    "email": "foo@bar.baz",
+    "polymac": "none",
+    "wss_binding": ":7443",
+    "internal_tls_port": "3361"
+}
+```
+
+The contens depend on the user used for http digest auth. You can use the credentials and ports to connect phones.
 
 ###### `GET: /pubxml`
 
@@ -692,8 +803,352 @@ Users in the publiccontext don't get informations regarding conferences in the t
 
 ### WebSocket
 
-#### team
+The Websocket deliveres Info about the liveState concerning conferences and registrations.
 
-#### friends
+The intended use for clients is that they request initial Information upon connection, and then track the events propagated through the websocket, to keep their information up to date.
 
-#### public
+Concerning this basic functionallity there is no difference between the users of the different contexts except that friends users will recieve no information about conferences in the team context and public users will receive only information about conferences in the public context. For registrations there is no difference at all (everybody can reach everybody else currently registered to the server).
+
+So the following is for users in all contexts, and the special privillegues for users in friends- and team contexts: controlling conferences, will be covered thereafter.
+
+The requests / replies / propagatet events will be shown as JSON. Actually they are JSON formatet strings.
+
+For all users the WebSocket url is:
+
+`wss://your.web.origin/api/live?login=user:pass`
+
+With `/api/live` as the path and the credentials as a request parameter as shown.
+
+#### getting initial information
+
+###### `{req: 'init'}`
+
+requests a copy of the current conference state. The answer looks like this:
+
+```
+{
+    "event": "reply",
+    "reply": "init",
+    "data": [
+        {
+            "name": "Test_1",
+            "context": "public",
+            "type": "16kHz-novideo",
+            "num": "32000",
+            "recording": {
+                "status": "norec"
+            },
+            "locked": false,
+            "floor": {
+                "name": "stefan",
+                "id": "20003",
+                "confid": "4",
+                "mute": false
+            },
+            "lastjoin": {
+                "name": "testuser",
+                "id": "20004",
+                "confid": "5",
+                "mute": true
+            },
+            "lastleave": {
+                "name": "testuser6",
+                "id": "20005",
+                "confid": "6",
+                "mute": false
+            },
+            "memcount": 15,
+            "members": [
+                {
+                    "name": "stefan",
+                    "id": "20003",
+                    "confid": "4",
+                    "mute": false
+                }
+                ...
+            ]
+        }
+        ...
+    ]
+}
+```
+
+If no conference is running, the `data` property will simply be an empty array.
+
+###### `{req: 'initreg'}`
+
+requests a copy of the current state of registrations. The answer looks like this:
+
+```
+{
+    "event": "reply",
+    "reply": "initreg",
+    "data": [
+        {
+            "id": "20003",
+            "regid": "gk6u3eb06lff9j8cqt4v",
+            "sipcon": "11.12.13.14:34024"
+        }
+        ...
+    ]
+}
+```
+
+If nobody is registered the `data` property will be an empty array. The `regid` is freeswitchs `call-id`. For a client to get the names of registered users it has to relate it's copy of the xmlState to this information through the `id`. The `sipcon` is simply the IP and Port the client has open for SIP messages.
+
+#### Events propagated to all users
+
+##### xmlState
+
+Each time the xmlState changes, i.e. users or conferences get added or deletet, or something else causes freeswitch to reloadxml, all users get notified through the websocket:
+
+`{"event":"newXML"}`
+
+This is meant for the clients to get the updatet xml by their respective http-means as soon as they need a current copy.
+
+##### Conference state
+
+###### Conference is started
+
+```
+{
+    "event": "newConference",
+    "data": {
+        "name": "Test",
+        "context": "public",
+        "type": "16kHz-novideo",
+        "num": "32000",
+        "recording": {
+            "status": "norec"
+        },
+        "locked": false,
+        "floor": {},
+        "lastjoin": {
+            "name": "stefan",
+            "id": "20003",
+            "confid": "5",
+            "mute": false
+        },
+        "lastleave": {},
+        "memcount": 1,
+        "members": [
+            {
+                "name": "stefan",
+                "id": "20003",
+                "confid": "5",
+                "mute": false
+            }
+        ]
+    }
+}
+```
+
+###### floor changes
+
+```
+{
+    "event": "floorchange",
+    "conference": "Test",
+    "data": {
+        "name": "stefan",
+        "id": "20003",
+        "confid": "5",
+        "mute": false
+    }
+}
+```
+
+The data is the member getting the floor.
+
+###### recording starts
+
+```
+{
+    "event": "recStart",
+    "conference": "Test_1",
+    "file": "/recordings/Test_1-2021-08-31T12:09:15.578Z.wav"
+}
+```
+
+###### recording gets paused
+
+```
+{
+    "event": "recPause",
+    "conference": "Test_1",
+    "file": "/recordings/Test_1-2021-08-31T12:09:15.578Z.wav"
+}
+```
+
+###### recording resumed
+
+```
+{
+    "event": "recResume",
+    "conference": "Test_1",
+    "file": "/recordings/Test_1-2021-08-31T12:09:15.578Z.wav"
+}
+```
+
+###### recording stopped
+
+```
+{
+    "event": "recStop",
+    "conference": "Test_1"
+}
+```
+
+###### new member joins
+
+```
+{
+    "event": "newMember",
+    "conference": "Test_1",
+    "data": {
+        "name": "stefan",
+        "id": "20003",
+        "confid": "8",
+        "mute": false
+    }
+}
+```
+
+###### member gets muted
+
+```
+{
+    "event": "mute",
+    "conference": "Test_1",
+    "data": "7"
+}
+```
+
+With `data` being the members `confid`.
+
+###### member gets unmuted
+
+```
+{
+    "event": "unmute",
+    "conference": "Test_1",
+    "data": "7"
+}
+```
+
+With `data` being the `confid` of the member.
+
+###### conference gets locked
+
+```
+{
+    "event": "lock",
+    "conference": "Test_1"
+}
+```
+
+###### conference gets unlocked
+
+```
+{
+    "event": "unlock",
+    "conference": "Test_1"
+}
+```
+
+###### member leaves
+
+```
+{
+    "event": "delMember",
+    "conference": "Test_1",
+    "data": "8"
+}
+```
+
+With `data` being the `confid`. This event gets propagated regardless of the reason the member leaves -- hangup or kick or something else.
+
+###### a mute all occoured
+
+```
+{
+    "event": "muteAll",
+    "conference": "Test_1"
+}
+```
+
+###### conference ends
+
+```
+{
+    "event": "delConference",
+    "conference": "Test_1"
+}
+```
+
+##### Registrations state
+
+###### new registration
+
+```
+{
+    "event": "addReg",
+    "user": {
+        "id": "20003",
+        "regid": "q9dc8sah3e4m6sq3v2co",
+        "sipcon": "11.12.13.14:44820"
+    }
+}
+```
+
+###### registration deleted
+
+```
+{
+    "event": "delReg",
+    "user": {
+        "id": "20003",
+        "regid": "q9dc8sah3e4m6sq3v2co",
+        "sipcon": "11.12.13.14:44820"
+    }
+}
+```
+
+#### Functions available for friends- and team users
+
+The following can only be done by friends or team users. It's the same for both except that friends users don't know anything about conferences in the team context; therfore they would normally not do anything with them.
+
+##### Conference controls
+
+The example uses a conference named `Test_42`, that means the conference name.
+
+###### `{req:'exec',conference:'Test_42',call:'*string*'}`
+
+Where `*string*` may be one of:
+
+- `lock`: locks the conference
+- `unlock`: unlocks the conference
+- `startrec`: starts recording
+- `pauserec`: pauses recording
+- `resumerec`: resumes recording
+- `stoprec`: stops recording
+- `muteall`: mutes all members
+- `kickall`: kicks everybody
+
+There will be no extra confirmation to the caller of these requests. To check the success just listen to the events propagated to all users. In some cases of failure some (hopefully helpful) will be replied.
+
+##### Conference member controls
+
+The example uses `Test_42` as the conference name and `13` as the confid of the member who is meant. That means the confid as delivered by the liveState info and events. This is the same as the member id used by freeswitch.
+
+###### `{req:'memexec',conference:'Test_42',call:'*string*',member:'13'}`
+
+Where `*string*` may be one of:
+
+- `mute`: mutes the member
+- `unmute`: unmutes the member
+- `kick`: kicks the member
+
+Again, there is no extra confirmation for these requests, just listen to the propagated events to check success. In some cases of failure some (hopefully helpful) will be replied.
+
+
