@@ -2,6 +2,8 @@
 
 ## About
 
+**gsc branch**
+
 This is the middleware part of [freeswitch-connector](https://github.com/gidmoth/freeswitch-connector). For general Information on Installation and usage please refer to the README therein. Connector is a nodejs program to help utilize freeswitch as a conferencing system. You can also find an example client using the API it provides [here](https://github.com/gidmoth/fsconcli).
 
 As described in the README [here](https://github.com/gidmoth/freeswitch-connector), connector separates access to it's API based on the context of a user in freeswitchs directory. Also, connector provides a http API as well as a WebSocket, therfore the following reference is devided by http vs WebSocket, and inside both by the three contexts: team, friends and public.
