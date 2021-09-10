@@ -182,6 +182,7 @@ const handle = (event, xmlState, liveState) => {
                             break;
                         }
                         case 'startrecording': {
+                            //console.log(event.serialize('json'))
                             switch (liveState.conferences[posi].recording.status) {
                                 case 'running': {
                                     say.leaSay(conference, 'already')
@@ -433,6 +434,34 @@ const handle = (event, xmlState, liveState) => {
                                     liveState.emit('unlock', conference)
                                     break;
                                 }
+                                case 'start-recording': {
+                                    let file = event.getHeader('Path')
+                                    liveState.conferences[posi].recording.status = 'running'
+                                    liveState.conferences[posi].recording.file = file
+                                    liveState.emit('recStart', conference, file)
+                                    say.leaSay(conference, 'start')
+                                        .then(answer => {
+                                            console.log(answer)
+                                        })
+                                        .catch(err => {
+                                            console.log(err)
+                                        })
+                                    break;
+                                }
+                                /* case 'stop-recording': {
+                                    console.log('TRYING STOPREC!')
+                                    liveState.conferences[posi].recording.status = 'norec'
+                                    delete liveState.conferences[posi].recording.file
+                                    liveState.emit('recStop', conference)
+                                    say.leaSay(conference, 'stop')
+                                        .then(answer => {
+                                            console.log(answer)
+                                        })
+                                        .catch(err => {
+                                            console.log(err)
+                                        })
+                                    break;
+                                } */
                                 default: {
                                     //console.log(event.serialize('json'))
                                     break;
