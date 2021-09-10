@@ -362,6 +362,7 @@ const handle = (event, xmlState, liveState) => {
                                     break;
                                 }
                                 case 'add-member': {
+                                    //console.log(event.serialize('json'))
                                     let mem = Parsers.addMemParse(event)
                                     liveState.conferences[posi].members.push(mem)
                                     liveState.conferences[posi].lastjoin = mem
