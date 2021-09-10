@@ -47,6 +47,19 @@ function selectSend(client, confarr, conf, msg) {
     }
 }
 
+function pubconf(confdata) {
+    let { locked, context, recording, lastjoin, lastleave, memcount, members, ...pubdata } = confdata
+    return pubdata
+}
+
+function pubstate(confarray) {
+    let pubs = []
+    confarray.forEach(conf => {
+        pubs.push(pubconf(conf))
+    })
+    return pubs
+}
+
 async function liveroutes(fastify, options) {
 
     fastify.register(require('fastify-websocket'), {
@@ -117,7 +130,7 @@ async function liveroutes(fastify, options) {
                     }
                     case 'public': {
                         let filtered = fastify.liveState.conferences.filter(cnf => { return cnf.context === 'public' })
-                        client.send(`{"event":"newLiveState","data":${JSON.stringify(filtered)}}`)
+                        client.send(`{"event":"newLiveState","data":${JSON.stringify(pubstate(filtered))}}`)
                         break;
                     }
                 }
@@ -126,11 +139,17 @@ async function liveroutes(fastify, options) {
     })
 
     fastify.liveState.on('newConference', (data) => {
+        //console.log(JSON.stringify(data))
+        let pubdata = pubconf(data)
         fastify.websocketServer.clients.forEach(client => {
             //console.log(`SEND TO: ${client.ctx}`)
             if (client.readyState === 1) {
                 switch (data.context) {
                     case 'public': {
+                        if (client.ctx === 'public') {
+                            client.send(`{"event":"newConference","data":${JSON.stringify(pubdata)}}`)
+                            return
+                        }
                         client.send(`{"event":"newConference","data":${JSON.stringify(data)}}`)
                         break;
                     }
@@ -153,7 +172,7 @@ async function liveroutes(fastify, options) {
 
     fastify.liveState.on('newMember', (conf, mem) => {
         fastify.websocketServer.clients.forEach(client => {
-            if (client.readyState === 1) {
+            if (client.readyState === 1 && client.ctx !== 'public') {
                 selectSend(client, fastify.liveState.conferences, conf, `{"event":"newMember","conference":"${conf}","data":${JSON.stringify(mem)}}`)
             }
         })
@@ -169,7 +188,7 @@ async function liveroutes(fastify, options) {
 
     fastify.liveState.on('unmute', (conf, memconfid) => {
         fastify.websocketServer.clients.forEach(client => {
-            if (client.readyState === 1) {
+            if (client.readyState === 1 && client.ctx !== 'public') {
                 selectSend(client, fastify.liveState.conferences, conf, `{"event":"unmute","conference":"${conf}","data":"${memconfid}"}`)
             }
         })
@@ -177,7 +196,7 @@ async function liveroutes(fastify, options) {
 
     fastify.liveState.on('mute', (conf, memconfid) => {
         fastify.websocketServer.clients.forEach(client => {
-            if (client.readyState === 1) {
+            if (client.readyState === 1 && client.ctx !== 'public') {
                 selectSend(client, fastify.liveState.conferences, conf, `{"event":"mute","conference":"${conf}","data":"${memconfid}"}`)
             }
         })
@@ -185,7 +204,7 @@ async function liveroutes(fastify, options) {
 
     fastify.liveState.on('muteAll', (conf) => {
         fastify.websocketServer.clients.forEach(client => {
-            if (client.readyState === 1) {
+            if (client.readyState === 1 && client.ctx !== 'public') {
                 selectSend(client, fastify.liveState.conferences, conf, `{"event":"muteAll","conference":"${conf}"}`)
             }
         })
@@ -193,7 +212,7 @@ async function liveroutes(fastify, options) {
 
     fastify.liveState.on('recStop', (conf) => {
         fastify.websocketServer.clients.forEach(client => {
-            if (client.readyState === 1) {
+            if (client.readyState === 1 && client.ctx !== 'public') {
                 selectSend(client, fastify.liveState.conferences, conf, `{"event":"recStop","conference":"${conf}"}`)
             }
         })
@@ -201,7 +220,7 @@ async function liveroutes(fastify, options) {
 
     fastify.liveState.on('recResume', (conf, file) => {
         fastify.websocketServer.clients.forEach(client => {
-            if (client.readyState === 1) {
+            if (client.readyState === 1 && client.ctx !== 'public') {
                 selectSend(client, fastify.liveState.conferences, conf, `{"event":"recResume","conference":"${conf}","file":"${file}"}`)
             }
         })
@@ -209,7 +228,7 @@ async function liveroutes(fastify, options) {
 
     fastify.liveState.on('recPause', (conf, file) => {
         fastify.websocketServer.clients.forEach(client => {
-            if (client.readyState === 1) {
+            if (client.readyState === 1 && client.ctx !== 'public') {
                 selectSend(client, fastify.liveState.conferences, conf, `{"event":"recPause","conference":"${conf}","file":"${file}"}`)
             }
         })
@@ -217,7 +236,7 @@ async function liveroutes(fastify, options) {
 
     fastify.liveState.on('recStart', (conf, file) => {
         fastify.websocketServer.clients.forEach(client => {
-            if (client.readyState === 1) {
+            if (client.readyState === 1 && client.ctx !== 'public') {
                 selectSend(client, fastify.liveState.conferences, conf, `{"event":"recStart","conference":"${conf}","file":"${file}"}`)
             }
         })
@@ -233,7 +252,7 @@ async function liveroutes(fastify, options) {
 
     fastify.liveState.on('delMember', (conf, memconfid) => {
         fastify.websocketServer.clients.forEach(client => {
-            if (client.readyState === 1) {
+            if (client.readyState === 1 && client.ctx !== 'public') {
                 selectSend(client, fastify.liveState.conferences, conf, `{"event":"delMember","conference":"${conf}","data":"${memconfid}"}`)
             }
         })
@@ -241,7 +260,7 @@ async function liveroutes(fastify, options) {
 
     fastify.liveState.on('lock', (conf) => {
         fastify.websocketServer.clients.forEach(client => {
-            if (client.readyState === 1) {
+            if (client.readyState === 1 && client.ctx !== 'public') {
                 selectSend(client, fastify.liveState.conferences, conf, `{"event":"lock","conference":"${conf}"}`)
             }
         })
@@ -249,7 +268,7 @@ async function liveroutes(fastify, options) {
 
     fastify.liveState.on('unlock', (conf) => {
         fastify.websocketServer.clients.forEach(client => {
-            if (client.readyState === 1) {
+            if (client.readyState === 1 && client.ctx !== 'public') {
                 selectSend(client, fastify.liveState.conferences, conf, `{"event":"unlock","conference":"${conf}"}`)
             }
         })
@@ -257,7 +276,7 @@ async function liveroutes(fastify, options) {
 
     fastify.liveState.on('addReg', (usr) => {
         fastify.websocketServer.clients.forEach(client => {
-            if (client.readyState === 1) {
+            if (client.readyState === 1 && client.ctx === 'team') {
                 client.send(`{"event":"addReg","user":${JSON.stringify(usr)}}`)
             }
         })
@@ -265,7 +284,7 @@ async function liveroutes(fastify, options) {
 
     fastify.liveState.on('delReg', (usr) => {
         fastify.websocketServer.clients.forEach(client => {
-            if (client.readyState === 1) {
+            if (client.readyState === 1 && client.ctx === 'team') {
                 client.send(`{"event":"delReg","user":${JSON.stringify(usr)}}`)
             }
         })
@@ -296,13 +315,20 @@ async function liveroutes(fastify, options) {
                             }
                             case 'public': {
                                 let filtered = fastify.liveState.conferences.filter(cnf => { return cnf.context === 'public' })
-                                conn.socket.send(`{"event":"reply","reply":"init","data":${JSON.stringify(filtered)}}`)
+                                conn.socket.send(`{"event":"reply","reply":"init","data":${JSON.stringify(pubstate(filtered))}}`)
                                 break;
                             }
                         }
                         break
                     }
                     case 'initreg': {
+                        if (conn.socket.ctx === 'public' ||
+                            conn.socket.ctx === 'friends') {
+                            console.log('UA_INITREG!')
+                            conn.socket.send('HTTP/1.1 401 Unauthorized\r\n\r\n')
+                            conn.socket.close()
+                            return
+                        }
                         conn.socket.send(`{"event":"reply","reply":"initreg","data":${JSON.stringify(fastify.liveState.registrations)}}`)
                         break
                     }
@@ -485,7 +511,7 @@ async function liveroutes(fastify, options) {
                 }
             } catch (e) {
                 //console.log(e)
-                conn.socket.send(`{"event":"error","error":"wrong format"}`)
+                conn.socket.send(`{"event":"error","error":"wrong format or internal server error"}`)
             }
         })
     })
