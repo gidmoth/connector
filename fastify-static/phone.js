@@ -43,6 +43,7 @@ async function vcroutes(fastify, options) {
         }
         let answer = { op: '/friendxml' }
         answer.state = {}
+        answer.state.users = []
         answer.state.conferences = fastify.xmlState.conferences.filter(conf => {
             return conf.context != 'team'
         })
@@ -53,6 +54,7 @@ async function vcroutes(fastify, options) {
     fastify.get('/pubxml', async function (req, reply) {
         let answer = { op: '/pubxml' }
         answer.state = {}
+        answer.state.users = []
         answer.state.conferences = fastify.xmlState.conferences.filter(conf => {
             return conf.context === 'public'
         })
