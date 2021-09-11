@@ -25,6 +25,8 @@ async function friendsrecr(fastify, options) {
         }
     }
 
+    const hide = ['Verlag_1', 'Verlag_2', 'TK']
+
     fastify.get('/fr/friendsrec', async function (req, reply) {
         if (req.user.context === 'public') {
             reply.code(401)
@@ -36,7 +38,7 @@ async function friendsrecr(fastify, options) {
                 return conf.name === file.split('-')[0]
             })[0].context
             // console.log(`GOT RECCONTEXT: ${ctx}`)
-            if (ctx !== 'team') {
+            if (ctx !== 'team' && !hide.includes(file.split('-')[0])) {
                 answer.files.push(file)
             }
         })
