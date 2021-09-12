@@ -75,7 +75,7 @@ const polyProvUser = (user, xmlState) => {
 
 const linProvUser = (user, xmlState) => {
     let confObj = getConfArrays(xmlState)
-    let linphoneXml = templates.getLinXml(user, xmlState.globals.hostname, xmlState.globals.internal_tls_port, confObj)
+    let linphoneXml = templates.getLinXml(user, xmlState.globals.domain_name, xmlState.globals.internal_tls_port, confObj)
     let linphoneFile = path.join(Provpaths.linphone, `${user.id}/linphone.xml`)
     if (!(fs.existsSync(path.dirname(linphoneFile)))) {
         fs.mkdirSync(path.dirname(linphoneFile))
