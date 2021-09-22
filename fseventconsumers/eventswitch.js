@@ -484,6 +484,8 @@ const handle = (event, xmlState, liveState) => {
                     user.id = event.getHeader('from-user')
                     if (liveState.registrations.findIndex(usr => usr.id === user.id) !== -1) {
                         let regidx = liveState.registrations.findIndex(usr => usr.id === user.id)
+                        //console.log('would delreg in IF becouse of:')
+                        //console.log(event.serialize('json'))
                         liveState.emit('delReg', liveState.registrations[regidx])
                         liveState.registrations.splice(regidx, 1)
                     }
@@ -497,6 +499,8 @@ const handle = (event, xmlState, liveState) => {
                     //console.log(`SHOULD_DELREG: ${event.serialize('json')}`)
                     let regid = event.getHeader('call-id')
                     let regidx = liveState.registrations.findIndex(user => user.regid === regid)
+                    //console.log('would delreg UNREGISTER becouse of:')
+                    //console.log(event.serialize('json'))
                     liveState.emit('delReg', liveState.registrations[regidx])
                     liveState.registrations.splice(regidx, 1)
                     break
@@ -505,6 +509,8 @@ const handle = (event, xmlState, liveState) => {
                     //console.log(`SHOULD_DELREG: ${event.serialize('json')}`)
                     let regid = event.getHeader('call-id')
                     let regidx = liveState.registrations.findIndex(user => user.regid === regid)
+                    //console.log('would delreg in EXPIRE becouse of:')
+                    //console.log(event.serialize('json'))
                     liveState.emit('delReg', liveState.registrations[regidx])
                     liveState.registrations.splice(regidx, 1)
                     break
