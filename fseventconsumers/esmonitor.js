@@ -9,7 +9,14 @@ const startMon = (xmlState, liveState) => {
     Conn.connect()
     .then(connection => {
         // Subscribe to all FreeSWITCH events:
-        connection.subscribe(Conn.ALL_EVENTS);
+        // connection.subscribe(Conn.ALL_EVENTS);
+        connection.subscribe([
+            'BACKGROUND_JOB',
+            'CUSTOM conference::maintenance',
+            'CUSTOM sofia::register',
+            'CUSTOM sofia::unregister',
+            'CUSTOM sofia::expire'
+        ])
         connection.on(Conn.Event.RECEIVED, event => {
             // A new FreeSWITCH event has been received!
             Eswitch.handle(event, xmlState, liveState);
