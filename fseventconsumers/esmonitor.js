@@ -17,6 +17,8 @@ const startMon = (xmlState, liveState) => {
             'CUSTOM sofia::unregister',
             'CUSTOM sofia::expire'
         ])
+        connection.filter('Event-Name', 'BACKGROUND_JOB');
+        connection.filter('Event-Name', 'CUSTOM');
         connection.on(Conn.Event.RECEIVED, event => {
             // A new FreeSWITCH event has been received!
             Eswitch.handle(event, xmlState, liveState);

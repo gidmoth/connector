@@ -49,7 +49,7 @@ liveInit.runreg(liveState)
 
 // init fastify for rest and static interface
 const fastify = require('fastify')({
-    logger: true,
+    logger: false,
     https: {
         key: fs.readFileSync(fasticonf.key),
         cert: fs.readFileSync(fasticonf.cert),

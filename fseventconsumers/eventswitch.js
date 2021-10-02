@@ -23,12 +23,12 @@ const handle = (event, xmlState, liveState) => {
     let eventName = event.getHeader('Event-Name');
     switch (eventName) {
         case Event.Channel.CREATE: {
-            ;
+            console.log(event.serialize('json'));
             // ...
             break;
         }
         case Event.Channel.HANGUP: {
-            ;
+            console.log(event.serialize('json'));
             // ...
             break;
         }
@@ -38,7 +38,7 @@ const handle = (event, xmlState, liveState) => {
                 case 'reloadxml': {
                     if (event.getBody().startsWith('+OK')) {
                         maintain.updateXmlState(xmlState);
-                        console.log(`${jobname}: ${event.getBody().trim()}`);
+                        //console.log(`${jobname}: ${event.getBody().trim()}`);
                     } else {
                         console.log(`ERROR: ${jobname}: ${event.getBody().trim()}`)
                     }
@@ -471,6 +471,7 @@ const handle = (event, xmlState, liveState) => {
                             // console.log(event.serialize('json'))
                             break;
                         }
+                    
                     }
                     break;
                 }
@@ -520,11 +521,11 @@ const handle = (event, xmlState, liveState) => {
                     break;
                 }
             }
-
+            break;
         }
         default: {
             //    console.log(eventName)
-            //    console.log(event.serialize('json'))
+                console.log(event.serialize('json'))
             //    console.log(event.getBody())
             break;
         }
