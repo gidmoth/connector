@@ -71,6 +71,11 @@ const getLinXml = (user, hostname, tlsport, confObj) => {
       <entry name="privacy" overwrite="true">32768</entry>
       <entry name="push_notification_allowed" overwrite="true">0</entry>
       <entry name="publish_expires" overwrite="true">-1</entry>
+      <entry name="nat_policy_ref" overwrite="true">nat_policy_gsphone</entry>
+    </section>
+    <section name="nat_policy_gsphone">
+      <entry name="stun_server" overwrite="true"></entry>
+      <entry name="protocols" overwrite="true"></entry>
     </section>
     <section name="audio_codec_6" overwrite="true">
       <entry name="mime" overwrite="true">G722</entry>
@@ -79,6 +84,8 @@ const getLinXml = (user, hostname, tlsport, confObj) => {
       <entry name="enabled" overwrite="true">16</entry>
     </section>
     <section name="sip">
+      <entry name="auto_net_state_mon" overwrite="true">0</entry>
+      <entry name="media_encryption_mandatory" overwrite="true">1</entry>
       <entry name="media_encryption" overwrite="true">srtp</entry>
     </section>
     <section name="auth_info_0" overwrite="true">
