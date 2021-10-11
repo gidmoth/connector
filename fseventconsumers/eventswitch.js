@@ -378,6 +378,9 @@ const handle = (event, xmlState, liveState) => {
                                     if (event.getHeader('New-ID') === 'none') {
                                         return;
                                     }
+                                    if (event.getHeader('Speak') === 'false') {
+                                        return;
+                                    }
                                     let mem = Parsers.addMemParse(event)
                                     liveState.conferences[posi].floor = mem
                                     liveState.emit('floorchange', conference, mem)

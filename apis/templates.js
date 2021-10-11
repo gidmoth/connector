@@ -84,7 +84,6 @@ const getLinXml = (user, hostname, tlsport, confObj) => {
       <entry name="enabled" overwrite="true">16</entry>
     </section>
     <section name="sip">
-      <entry name="auto_net_state_mon" overwrite="true">0</entry>
       <entry name="media_encryption_mandatory" overwrite="true">1</entry>
       <entry name="media_encryption" overwrite="true">srtp</entry>
     </section>
